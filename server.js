@@ -229,21 +229,20 @@ app.get('/api/complaints/:i', async (req, res) => {
                 console.error(err);
                 res.status(401).json(err);
             } else {
-                if(data.length == 1)
-                    {
-                        db.all(`select type from Users where uid = ?`, [req.body.uid], (err, row)=>{
-                            if(err){
-                                console.error(err);
-                                res.status(401).json(err);
+                if (data.length == 1) {
+                    db.all(`select type from Users where uid = ?`, [req.body.uid], (err, row) => {
+                        if (err) {
+                            console.error(err);
+                            res.status(401).json(err);
+                        }
+                        else {
+                            if ((row.length == 1 && row[0]['type'] == 1) || data[0]['uid'] == req.body.uid) {
+                                res.status(200).json(data);
                             }
-                            else{
-                                if((row.length == 1 && row[0]['type'] == 1) || data[0]['uid'] == req.body.uid ){
-                                    res.status(200).json(data);
-                                }
-                            }
-                        });
-                        
-                    }
+                        }
+                    });
+
+                }
                 else
                     res.status(404).json("Could not find complaint.");
             }
@@ -256,9 +255,9 @@ app.get('/api/complaints/:i', async (req, res) => {
 
 app.post('/api/complaints/', async function (req, res) {
     console.log(req.body);
-   // console.log(checkTokenValid(req.body.token));
+    // console.log(checkTokenValid(req.body.token));
     var ctype = "";
-    if(req.body.ctype)
+    if (req.body.ctype)
         ctype = "Service";
     else
         ctype = "Product";
@@ -266,14 +265,14 @@ app.post('/api/complaints/', async function (req, res) {
     console.log(result);
     if (checkTokenValid(req.body.token)) {
         if (req.body.uid && req.body.type == "new") {
-                    db2.run(`insert into "Complaints" (uid,type,context,status) values(?,?,?,?)`, [[req.body.uid], ctype, [req.body.context], "Open"], (err, row) => {
-                        if (err) {
-                            console.log(err);
-                        }
-                        else{
-                            res.status(201).json("Complaint received.");
-                        }
-                    });
+            db2.run(`insert into "Complaints" (uid,type,context,status) values(?,?,?,?)`, [[req.body.uid], ctype, [req.body.context], "Open"], (err, row) => {
+                if (err) {
+                    console.log(err);
+                }
+                else {
+                    res.status(201).json("Complaint received.");
+                }
+            });
         }
         if (req.body.uid && req.body.type == "modify") {
             //is the modifier an admin?
@@ -325,21 +324,16 @@ function checkTokenValid(token) {
     //Buffer.from(tk1[0], 'base64').toString('utf-8')
     var tk1 = token.split(".");
     var uid = base64.decode(tk1[2]);
-    console.log(uid);
-    console.log(base64.decode(tk1[0])+" - - - "+Date.now());
     if (base64.decode(tk1[0]) < Date.now() && (Date.now() - base64.decode(tk1[0])) < 1000 * 36000) {
-        console.log("2");
-        return new Promise( function(resolve, reject){
+        return new Promise(function (resolve, reject) {
             db.all(`select uid from Users where uid = ?`, uid, async (err, data) => {
                 if (err) {
                     console.log(err);
                 } else {
-                   resolve (data.length> 0);
+                    resolve(data.length > 0);
                 }
             });
         })
-        
-        
     }
     return false;
 }

@@ -1,0 +1,95 @@
+<html>
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!------ Include the above in your HEAD tag ---------->
+<style>
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+.bg-gradient-primary {
+        background-color: #4dffdf;
+        background-image: linear-gradient(0deg, #2b3286 10%, #204dd0);
+        background-size: cover;
+    }
+.clean-navbar.fixed-bottom, .clean-navbar.fixed-top {
+    box-shadow: 0 0 20px rgba(0,0,0,.4);
+}
+.bg-white {
+    background-color: #e7fbfd!important;
+}
+</style>
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/all.css">
+
+<body class="bg-gradient-primary"><div class="container justify-content-center">
+
+<div class="container justify-content-center">
+    <nav class="navbar navbar-light navbar-expand-lg fixed-top bg-white clean-navbar">
+        <div class="container"><a class="navbar-brand logo" href="#">ABC Company</a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navcol-1">
+                <ul class="nav navbar-nav ml-auto">
+                    <li class="nav-item"><a class="nav-link active" href="about-us.html">About Us</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="contact-us.html">Contact Us</a></li>
+                    <li class="nav-item" style="width: 68px;"></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <br>
+    <hr>
+   
+    <img src="/wing.png" height="150" width="150"  class="center">
+
+    <div class="row">
+        <aside class="col-sm-4"></aside>
+        <aside class="col-sm-4">
+            <div class="view">
+                <div class="alert alert-success alert-dismissable" contenteditable="true" id="success" hidden>
+              <button type="button" class="close" data-dismiss="alert" aria-hidden="true" control-id="ControlID-25">×</button>
+                    <h4>Alert!</h4>
+                    <strong>Warning!</strong> Logged in successfuly, Redirecting.
+                </div>
+            </div>
+            <div class="view">
+                <div class="alert alert-dismissable alert-danger" contenteditable="true" id="failure" hidden>
+              <button type="button" class="close" data-dismiss="alert" aria-hidden="true" control-id="ControlID-25">×</button>
+                    <h4>Alert!</h4>
+                    <strong>Warning!</strong> Login Failed.
+                </div>
+            </div>
+            <div class="card">
+                <article class="card-body">
+                    <a href="./register" class="float-right btn btn-outline-primary">Sign up</a>
+                    <h4 class="card-title mb-4 mt-1">Sign in</h4>
+                    <form>
+                        <div class="form-group">
+                            <label>Your username</label>
+                            <input name="" class="form-control" placeholder="username" type="username" id="username">
+                        </div> <!-- form-group// -->
+                        <div class="form-group">
+                            <a class="float-right" href="#">Forgot?</a>
+                            <label>Your password</label>
+                            <input class="form-control" placeholder="******" type="password" id="password">
+                        </div> <!-- form-group// -->
+                        <div class="form-group">
+                            <div class="checkbox">
+                                <label> <input type="checkbox"> Save password </label>
+                            </div> <!-- checkbox .// -->
+                        </div> <!-- form-group// -->
+                        <div class="form-group">
+                            <input type="button" class="btn btn-primary btn-block" onclick="login()" value="Login">
+                        </div> <!-- form-group// -->
+                    </form>
+                </article>
+            </div> <!-- card.// -->
+
+        </aside> <!-- col.// -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/core.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/md5.js"></script>
+        <script src="./js/util.js"></script>
+        <script src="./js/login.js"></script>
+    </body>
+</html>

@@ -89,18 +89,16 @@ app.get('/api/users', async (req, res) => {
 });
 
 //returns specific user information
-app.get('/api/users/:i', async (req, res) => {
-    console.log(req.body);
-    let token = req.body.token.split(".");
-    console.log(base64.decode(token));
-    db.all(`select * from Users where uid = ?`, [req.body.uid], (err, data) => {
+app.get('/api/users/:uid', async (req, res) => {
+    let token = req.query['token'].split(".");
+    db.all(`select * from Users where uid = ?`, [req.params.uid], (err, data) => {
         if (err) {
             console.error(err);
             res.json(err);
         } else {
             res.json(data);
         }
-    })
+    });
 });
 
 //What we're expecting in registeration
@@ -117,7 +115,7 @@ app.post('/api/users', function (req, res) {
                 else {
                     if (row.length == 0) {
 
-                        db.run(`insert into "Users" (username,password,email,type) values(?,?,?,?)`, [[req.body.username], md5([req.body.password]), [req.body.email], 1], (err, row) => {
+                        db.run(`insert into "Users" (username,password,email,type) values(?,?,?,?)`, [[req.body.username], [req.body.password], [req.body.email], 1], (err, row) => {
                             if (err) {
                                 console.log(err);
                             }
@@ -167,7 +165,6 @@ app.post('/api/users', function (req, res) {
             res.status(401).json("Missing login information.");
         }
         else {
-            console.log("we here 3");
             db.all(`select password, uid from Users where username = ?`, [req.body.username], (error, row) => {
                 if (error) {
                     console.error(error);
@@ -178,12 +175,10 @@ app.post('/api/users', function (req, res) {
                     var data = JSON.stringify(row);
                     if (row.length == 0) {
                         res.status(401).json("Invalid Login");
-                        //console.log("we here 5");
                     }
                     else {
                         console.log(row[0]['password'] + " " + req.body.password);
                         if (req.body.password == row[0]['password']) {
-                            //console.log("we here 6");
                             res.status(200).json(login(req.body.username, row[0]['uid']));
                         }
                     }
@@ -196,35 +191,13 @@ app.post('/api/users', function (req, res) {
     }
 });
 
-/* 
-app.post('/api/login', function(req,res){
+
+//return specific complaint
+app.get('/api/complaint/:cid', async (req, res) => {
     console.log(req.body);
-    if(...);
-})
- */
-//returns all present complaints
-app.get('/api/complaints', async (req, res) => {
-    console.log(req.body);
-
-    //is user admin?
-
-    db2.all('select * from Complaints', (err, data) => {
-        if (err) {
-            console.error(err);
-            res.json(err);
-        } else {
-            res.json(data);
-        }
-    })
-});
-
-//returns specific complaint
-app.get('/api/complaints/:i', async (req, res) => {
-    console.log(req.body);
-
     //match cid with the one we're getting complaints for
     if (checkTokenValid(req.body.token)) {
-        db2.all(`select * from Complaints where cid = ?`, [req.body.cid], (err, data) => {
+        db2.all(`select * from Complaints where cid = ?`, [req.params.cid], (err, data) => {
             if (err) {
                 console.error(err);
                 res.status(401).json(err);
@@ -248,21 +221,84 @@ app.get('/api/complaints/:i', async (req, res) => {
             }
         })
     }
+})
+
+
+//returns all present complaints
+app.get('/api/complaints', async (req, res) => {
+    console.log(req.query);
+    console.log("we here?")
+    //is user admin?
+    db.all(`select * from Users where uid = ?`, [req.query.uid], (err, data) => {
+        if (err) {
+            console.error(err);
+            res.json(err);
+        }
+        else {
+            if (data.length > 0) {
+                console.log("we here?1")
+                if (data[0]['type'] == 1) {
+                    console.log("we here?2")
+                    db2.all('select * from Complaints', (err, row) => {
+                        if (err) {
+                            console.error(err);
+                            res.json(err);
+                        } else {
+                            console.log("we here?3")
+                            res.json(row);
+                        }
+                    })
+                }
+            }
+        }
+    })
+
+
+});
+
+//returns user complaints
+app.get('/api/complaints/:i', async (req, res) => {
+    console.log(req.query);
+    var token = req.query.token;
+    var tk1 = token.split(".");
+    var uid = base64.decode(tk1[2]);
+    //can user get those complaints?
+    db.all(`select * from Users where uid = ?`, [req.query.uid], (err, data) => {
+        console.log("we here?0")
+        if (err) {
+
+            console.error(err);
+            res.json(err);
+        }
+        else {
+            if (data.length == 1) {
+                if (data[0]['type'] == 1 || data[0]['uid'] == uid) {
+                    db2.all('select * from Complaints where uid = ?', uid, (err, data) => {
+                        if (err) {
+                            console.error(err);
+                            res.json(err);
+                        } else {
+                            res.status(200).json(data);
+                        }
+                    })
+                }
+            }
+        }
+    })
+
+
 });
 
 //adds complaint to the system
 //cid(generated), uid(refers to userid),type(bool)(refers to complaint type 0/1 service/employee) context(string)(what the complaint is),status(string), token
 
 app.post('/api/complaints/', async function (req, res) {
-    console.log(req.body);
-    // console.log(checkTokenValid(req.body.token));
+    //console.log(req.body);
     var ctype = "";
     if (req.body.ctype)
         ctype = "Service";
     else
         ctype = "Product";
-    var result = checkTokenValid(req.body.token);
-    console.log(result);
     if (checkTokenValid(req.body.token)) {
         if (req.body.uid && req.body.type == "new") {
             db2.run(`insert into "Complaints" (uid,type,context,status) values(?,?,?,?)`, [[req.body.uid], ctype, [req.body.context], "Open"], (err, row) => {
@@ -281,7 +317,7 @@ app.post('/api/complaints/', async function (req, res) {
                     console.error(error);
                 }
                 else {
-                    if (row.length == 1 && row.type == 1) {
+                    if (row.length == 1 && row[0]['type'] == 1) {
                         db2.run(`UPDATE Complaints set STATUS = ? where cid = ?`, [req.body.status], [req.body.cid]);
                     }
                 }
@@ -350,7 +386,6 @@ app.get('/login', function (req, res) {
 app.get('/register', function (req, res) {
     res.sendFile(path.join(__dirname + '/frontend/register.html'));
 })
-
 app.get('/complaints', function (req, res) {
     res.sendFile(path.join(__dirname + '/frontend/complaints.html'));
 });

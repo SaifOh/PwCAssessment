@@ -24,7 +24,6 @@ function getComplaints() {
                     data: res,
                     search: true,
                     pagination: true,
-                   
                 }); 
                 
                 //add code to change inner html of complaints.html to show them in a table.

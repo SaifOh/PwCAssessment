@@ -1,4 +1,29 @@
 
+function getInfo() {
+    if (document.cookie.split("; ").find(row => row.startsWith("Access-Token="))) {
+        var cookie = document.cookie.split("; ").find(row => row.startsWith("Access-Token=")).replace("Access-Token=", "");
+        var uid = document.cookie.split("; "[1]).find(row => row.startsWith("userID=")).split('=')[1].replace(";", "");
+
+        var datas = { uid: uid, token: cookie };
+        //console.log(datas);
+        $.ajax({
+            type: "GET",
+            url: `${BASE_URL}:${PORT}/api/users/${uid}`,
+            data: datas,
+            contentType: "application/json; charset=utf-8",
+            error: function (er) {
+                console.log("error getting info");
+                console.error(er);
+            },
+            success: function (res) {
+               // console.log(res);
+                if (res.length>0) {
+                    window.location.href = "/index";
+                }
+            }
+        });
+    }
+}
 
 function login(){
     var username = $("#username").val()
@@ -25,6 +50,5 @@ function login(){
             window.location.href = "http://localhost:8080/index";
         }
     });
-
 
 }

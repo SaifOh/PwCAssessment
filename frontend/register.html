@@ -51,6 +51,7 @@
 
         <img src="/wing.png" height="150" width="150" class="center">
         <section class="clean-block clean-form dark">
+                
             <div class="row">
                 <aside class="col-sm-4"></aside>
                 <aside class="col-sm-4">
@@ -71,7 +72,7 @@
                                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true"
                                     control-id="ControlID-25">×</button>
                                 <h4>Alert!</h4>
-                                <strong>Registration</strong> Failed.
+                                <strong>Registration Failed.</strong> Check your input.
                             </div>
                         </div>
 
@@ -81,15 +82,15 @@
                             <form>
                                 <div class="form-group">
                                     <label>Your email</label>
-                                    <input name="" class="form-control" placeholder="Email" type="email" id="email">
+                                    <input name="" class="form-control" placeholder="Email" type="email" id="email" required>
                                 </div> <!-- form-group// -->
                                 <div class="form-group">
                                     <label>Your username</label>
-                                    <input class="form-control" placeholder="Username" type="username" id="username">
+                                    <input class="form-control" placeholder="Username" type="username" id="username" required>
                                 </div> <!-- form-group// -->
                                 <div class="form-group">
                                     <label>Your password</label>
-                                    <input class="form-control" placeholder="******" type="password" id="password">
+                                    <input class="form-control" placeholder="******" type="password" id="password" required>
                                 </div> <!-- form-group// -->
                                 <div class="form-group">
                                     <input type="button" class="btn btn-primary btn-block" onclick="register()"

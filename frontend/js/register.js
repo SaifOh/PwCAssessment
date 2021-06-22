@@ -6,7 +6,7 @@ function register(){
     var email = $("#email").val();
     var special = $("#special").val();
 
-    var datas = {username: $("#username").val(), password: CryptoJS.MD5(password).toString(), type:"register", email: email, special: special};
+    var datas = {username: username, password: CryptoJS.MD5(password).toString(), type:"register", email: email, special: special};
     //console.log(JSON.stringify(datas));
     $.ajax({
         type: "POST",
@@ -31,6 +31,7 @@ function register(){
                 $("#failure").attr("hidden");
             }
             else{
+                $("#failure").removeAttr("hidden");
                 console.log("Error maybe? "+res.message);
             }
         }

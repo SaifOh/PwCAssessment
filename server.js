@@ -67,17 +67,20 @@ app.listen(port, () => {
     console.log('Listening on port ' + port);
 });
 
-//returns all users, must elevate permissions perhaps
+//returns all users
 
 app.get('/api/users', async (req, res) => {
-    db.all('select * from Users', (err, data) => {
-        if (err) {
-            console.error(err);
-            res.json(err);
-        } else {
-            res.json(data);
-        }
-    })
+    console.log(req.query);
+    if (checkTokenValid(req.query.token) && isAdmin(req.query.uid)) {
+        db.all('select uid,username,email,type from Users', (err, data) => {
+            if (err) {
+                console.error(err);
+                res.json(err);
+            } else {
+                res.json(data);
+            }
+        })
+    }
 });
 
 //returns specific user information
@@ -183,6 +186,32 @@ app.post('/api/users', function (req, res) {
     }
 });
 
+app.put('/api/users', async (req, res) => {
+    if (checkTokenValid(req.body.token) && isAdmin(req.body.uid)) {
+        if (changeLevel(req.body.type, req.body.uuid)) {
+            res.status(200).json({ "message": "updated user" });
+        }
+    }
+    else {
+        res.status(401).json({ "message": "no permissions." });
+    }
+});
+// && isAdmin(req.query.uid)
+app.delete('/api/users', async (req, res) => {
+    if (checkTokenValid(req.body.token) && isAdmin(req.query.uid)) {
+        db.all(`delete from Users where uid = ?`, [req.params.uid], (err, data) => {
+            if (err) {
+                console.error(err);
+                res.json(err);
+            } else {
+                res.status(200).json({ "message": "deleted user" });
+            }
+        });
+    }
+    else {
+        res.status(401).json({ "message": "no permissions." });
+    }
+});
 
 //return specific complaint
 app.get('/api/complaint/:cid', async (req, res) => {
@@ -221,31 +250,32 @@ app.get('/api/complaints', async (req, res) => {
     //console.log(req.query);
     //console.log("we here?")
     //is user admin?
-    db.all(`select * from Users where uid = ?`, [req.query.uid], (err, data) => {
-        if (err) {
-            console.error(err);
-            res.json(err);
-        }
-        else {
-            if (data.length > 0) {
-                //   console.log("we here?1")
-                if (data[0]['type'] == 1) {
-                    //       console.log("we here?2")
-                    db.all('select * from Complaints', (err, row) => {
-                        if (err) {
-                            console.error(err);
-                            res.json(err);
-                        } else {
-                            //         console.log("we here?3")
-                            res.json(row);
-                        }
-                    })
+    console.log(req.query);
+    if (checkTokenValid(req.query.token) && isAdmin(req.query.uid)) {
+        db.all(`select * from Users where uid = ?`, [req.query.uid], (err, data) => {
+            if (err) {
+                console.error(err);
+                res.json(err);
+            }
+            else {
+                if (data.length > 0) {
+                    //   console.log("we here?1")
+                    if (data[0]['type'] == 1) {
+                        //       console.log("we here?2")
+                        db.all('select * from Complaints', (err, row) => {
+                            if (err) {
+                                console.error(err);
+                                res.json(err);
+                            } else {
+                                //         console.log("we here?3")
+                                res.json(row);
+                            }
+                        })
+                    }
                 }
             }
-        }
-    })
-
-
+        })
+    }
 });
 
 //returns user complaints
@@ -310,7 +340,7 @@ app.post('/api/complaints/', async function (req, res) {
                 }
                 else {
                     if (row.length == 1 && row[0]['type'] == 1) {
-                        
+
                         db.run(`UPDATE Complaints set STATUS = ? where cid = ?`, [req.body.status], [req.body.cid], (err, row) => {
                             if (err) {
                                 console.log(err);
@@ -340,8 +370,8 @@ app.put('/api/complaints/', async function (req, res) {
                 else {
                     //console.log("we here?")
                     if (row.length == 1 && row[0]['type'] == 1) {
-                     if (updateComp(req.body.status, req.body.cid))
-                        res.status(200).json("updated");
+                        if (updateComp(req.body.status, req.body.cid))
+                            res.status(200).json("updated");
                     }
                 }
             })
@@ -349,10 +379,39 @@ app.put('/api/complaints/', async function (req, res) {
     }
 });
 
+app.delete('/api/complaints', async (req, res) => {
+    if (checkTokenValid(req.body.token)) {
+        db.all(`delete from complaints where cid = ?`, [req.params.cid], (err, data) => {
+            if (err) {
+                console.error(err);
+                res.json(err);
+            } else {
+                res.status(200).json({ "message": "deleted complaint" });
+            }
+        });
+    }
+    else {
+        res.status(401).json({ "message": "no permissions." });
+    }
+});
+function changeLevel(level, uid) {
+    let data = [level, uid];
+    console.log(level+" "+uid);
+    let sql = `UPDATE Users SET type = ? WHERE uid = ?`
+    db.run(sql, data, (err, row) => {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            
+            return true;
+        }
+    });
+    return true;
+}
 function updateComp(status, cid) {
     let data = [status, cid];
     let sql = `UPDATE Complaints SET status = ? WHERE cid = ?`;
-    var solved = "Complaint status updated.";
     db.run(sql, data, (err, row) => {
         if (err) {
             console.log(err);
@@ -381,6 +440,18 @@ function login(username, uid) {
     //const token = jwt.sign({ userId: uid }, 'secret', { expiresIn: '24h' });
     var res = { userId: uid, token: encoded };
     return res;
+}
+
+function isAdmin(uid) {
+    return new Promise(function (resolve, reject) {
+        db.all(`select type from Users where uid = ?`, uid, async (err, data) => {
+            if (err) {
+                console.log(err);
+            } else {
+                resolve(data.length > 0);
+            }
+        });
+    })
 }
 
 function logout(req) {
@@ -421,8 +492,11 @@ app.get('/register', function (req, res) {
     res.sendFile(path.join(__dirname + '/frontend/register.html'));
 })
 
-app.get('/register/admin', function(req,res){
-    res.sendFile(path.join(__dirname+ '/frontend/r-admin.html'));
+app.get('/register/admin', function (req, res) {
+    res.sendFile(path.join(__dirname + '/frontend/r-admin.html'));
+})
+app.get('/ucomplaints', function (req, res) {
+    res.sendFile(path.join(__dirname + '/frontend/ucomplaints.html'));
 })
 
 app.get('/complaints', function (req, res) {

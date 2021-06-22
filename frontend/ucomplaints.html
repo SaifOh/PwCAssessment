@@ -80,24 +80,35 @@
         <br>
        
         <img src="/wing.png" height="150" width="150" class="center">
+       
         <section class="clean-block clean-form dark">
             <div class="card shadow">
                 <div class="card-header py-3">
-                    <p class="text-primary m-0 fw-bold">Users List</p>
+                    <p class="text-primary m-0 fw-bold">Complaints List</p>
                 </div>
                 <div class="card-body">
-                    <div class="table-responsive table mt-2" id="dataTable2" role="grid"
-                        aria-describedby="dataTable2_info">
-                        <table class="table" data-pagination="true" data-search="true" id="dataTable2"
-                            data-url="getUsers">
+                    <div class="view">
+                        <div class="alert alert-success alert-dismissable" contenteditable="true" id="success"
+                            hidden>
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true"
+                                control-id="ControlID-25">×</button>
+                            <h4>Alert!</h4>
+                            <strong>Complaint status updated successfuly, refreshing in 5.</strong>
+                        </div>
+                    </div>
+                    <div class="table-responsive table mt-2" id="dataTable" role="grid"
+                        aria-describedby="dataTable_info">
+                        <table class="table" data-pagination="true" data-search="true" id="dataTable"
+                            data-url="getComplaints">
                             <thead>
-                                <tr>
-                                    <th data-field="uid">User ID</th>
-                                    <th data-field="username">Username</th>
-                                    <th data-field="email">E-Mail</th>
-                                    <th data-field="type">Level</th>
-                                    <th data-formatter="setLevel" class="col-md-2">Set Level</th>
-                                </tr>
+                                    <tr>
+                                        <th data-field="cid" data-formatter="LinkFormatter">Complaint ID</th>
+                                        <th data-field="uid">User ID</th>
+                                        <th data-field="type">Type</th>
+                                        <th data-field="status">Status</th>
+                                        <th data-field="context" class="text-truncate col-md-4">Context</th>
+                                        <th data-formatter="setStatus" class="col-md-2">Set Status</th>
+                                    </tr>
                             </thead>
                             <tbody>
 

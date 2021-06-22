@@ -49,6 +49,7 @@ function getInfo() {
                     uname.innerHTML = "Hello, " + res[0].username;
                     if(res[0].type == 1)
                     $("#admin").removeAttr("hidden");
+                    $("#ucomp").removeAttr("hidden");
                 }
                 else {
                     var uname = document.getElementById("userboi");

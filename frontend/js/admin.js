@@ -38,16 +38,78 @@ function getComplaints() {
         }
     });
 }
+function getUsers() {
+    var uid = document.cookie.split("; "[1]).find(row => row.startsWith("userID=")).split('=')[1].replace(";", "");
+    var cookie = document.cookie.split("; ").find(row => row.startsWith("Access-Token=")).replace("Access-Token=", "");
 
+    var datas = { uid: uid, token: cookie }
+    //console.log(datas);
+    $.ajax({
+        type: "GET",
+        url: `${BASE_URL}:${PORT}/api/users`,
+        data: datas,
+        contentType: "application/json; charset=utf-8",
+        error: function (er) {
+            console.log("error getting users");
+            console.error(er);
+        },
+        success: function (res) {
+            //console.log(res);
+            if (res != "") {//if correct response
+
+                if ($("#dataTable2 tbody").length == 0) {
+                    $("#dataTable2").append("<tbody></tbody>");
+                }
+                $('#dataTable2').bootstrapTable({
+                    data: res,
+                    search: true,
+                    pagination: true,
+                });
+                
+
+                //add code to change inner html of complaints.html to show them in a table.
+            }
+            else {//if error msg
+                //show failed message
+            }
+
+        }
+    });
+}
 function detailFormatter(index, row, res) {
     var html = [];
-    console.log(res);
+    //console.log(res);
     $.each(row, function (key, value) {
       html.push('<p><b>' + key + ':</b> ' + value + '</p>')
     })
     return html.join('')
 }
+function updateLevel(level, uuid){
+    var cookie = document.cookie.split("; ").find(row => row.startsWith("Access-Token=")).replace("Access-Token=", "");
+    var uid = document.cookie.split("; "[1]).find(row => row.startsWith("userID=")).split('=')[1].replace(";", "");
+    var datas = { token: cookie, type: level, uid: uid, uuid: uuid}
+    $.ajax({
+        type: "PUT",
+        url: `${BASE_URL}:${PORT}/api/users`,
+        data: JSON.stringify(datas),
+        contentType: "application/json; charset=utf-8",
+        error: function (er) {
+            console.log("error updating user");
+            console.error(er);
+        },
+        success: function (res) {
+          //  console.log(res);
+            if (res.message == "updated user") {
+                $("#success").removeAttr("hidden");
+                setTimeout(() => {
+                    window.location.href = "http://localhost:8080/admin";
+                }, 5000)
+            }
+            //window.location.href = "http://localhost:8080/admin";
 
+        }
+    });
+}
 function updateComplaint(status, cid) {
 
     var cookie = document.cookie.split("; ").find(row => row.startsWith("Access-Token=")).replace("Access-Token=", "");
@@ -115,11 +177,21 @@ function setStatus(value, row, index) {
     //console.log(row)
     //<input type="button" class="btn btn-primary btn-block" onclick="updateComplaint(\"Resolved\","+row.cid+")'" value="Mark as resolved">
     if (row.status == "Open")
-        return "<a href='javascript:updateComplaint(\"Resolved\"," + row.cid + ")'>Mark as Resolved</a><br><a href='javascript:updateComplaint(\"Dismissed\"," + row.cid + ")'>Dismiss</a>";
+        return "<a class=\"btn btn-success\" href='javascript:updateComplaint(\"Resolved\"," + row.cid + ")'>Mark as Resolved</a><br><a class=\"btn btn-danger\" href='javascript:updateComplaint(\"Dismissed\"," + row.cid + ")'>Dismiss</a>";
     else
         if (row.status == "Resolved")
-            return "<a href='javascript:updateComplaint(\"Open\"," + row.cid + ")'>Mark as Open</a><br><a href='javascript:updateComplaint(\"Dismissed\"," + row.cid + ")'>Dismiss</a>";
+            return "<a class=\"btn btn-primary\" href='javascript:updateComplaint(\"Open\"," + row.cid + ")'>Mark as Open</a><br><a class=\"btn btn-danger\" href='javascript:updateComplaint(\"Dismissed\"," + row.cid + ")'>Dismiss</a>";
         else
-            return "<a href='javascript:updateComplaint(\"Resolved\"," + row.cid + ")'>Mark as Resolved</a><br><a href='javascript:updateComplaint(\"Open\"," + row.cid + ")'>Mark as Open</a>";
+            return "<a class=\"btn btn-success\" href='javascript:updateComplaint(\"Resolved\"," + row.cid + ")'>Mark as Resolved</a><br><a class=\"btn btn-primary\" href='javascript:updateComplaint(\"Open\"," + row.cid + ")'>Mark as Open</a>";
+}
+
+
+function setLevel(value, row, index) {
+    //console.log(row)
+    //<input type="button" class="btn btn-primary btn-block" onclick="updateComplaint(\"Resolved\","+row.cid+")'" value="Mark as resolved">
+    if (row.type == "1")
+        return "<a class=\"btn btn-danger\" href='javascript:updateLevel(0," + row.uid + ")'>Demote</a>";
+    if (row.type == "0")
+        return "<a class=\"btn btn-success\" href='javascript:updateLevel(1," + row.uid + ")'>Promote</a>";
 
 }

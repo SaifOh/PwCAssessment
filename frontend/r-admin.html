@@ -31,7 +31,7 @@
 <body class="bg-gradient-primary">
     <div class="container justify-content-center">
         <nav class="navbar navbar-light navbar-expand-lg fixed-top bg-white clean-navbar">
-            <div class="container"><a class="navbar-brand logo" href="index">ABC Company</a><button
+            <div class="container"><a class="navbar-brand logo" href="../index">ABC Company</a><button
                     data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle
                         navigation</span><span class="navbar-toggler-icon"></span></button>
                 <div class="collapse navbar-collapse" id="navcol-1">
@@ -76,8 +76,8 @@
                         </div>
 
                         <article class="card-body">
-                            <a href="./login" class="float-right btn btn-outline-primary">Log in</a>
-                            <h4 class="card-title mb-4 mt-1">Register</h4>
+                            <a href="../login" class="float-right btn btn-outline-primary">Log in</a>
+                            <h4 class="card-title mb-4 mt-1">Admin Registeration Page</h4>
                             <form>
                                 <div class="form-group">
                                     <label>Your email</label>
@@ -90,6 +90,11 @@
                                 <div class="form-group">
                                     <label>Your password</label>
                                     <input class="form-control" placeholder="******" type="password" id="password">
+                                </div> <!-- form-group// -->
+                                <div class="form-group">
+                                    <label>Special code? (Admins only)</label>
+                                    <input name="" class="form-control" placeholder="Special Code" type="special"
+                                        id="special">
                                 </div> <!-- form-group// -->
                                 <div class="form-group">
                                     <input type="button" class="btn btn-primary btn-block" onclick="register()"

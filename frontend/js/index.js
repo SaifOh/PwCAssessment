@@ -19,7 +19,7 @@ function complaint() {
             console.error(er);
         },
         success: function (res) {
-            console.log(res);
+            //console.log(res);
             //window.location.href = "http://localhost:8080/index";
             $("#success").removeAttr("hidden");
         }
@@ -43,10 +43,12 @@ function getInfo() {
                 console.error(er);
             },
             success: function (res) {
-               // console.log(res);
+                //console.log(res);
                 if (res.length>0) {
                     var uname = document.getElementById("userboi");
                     uname.innerHTML = "Hello, " + res[0].username;
+                    if(res[0].type == 1)
+                    $("#admin").removeAttr("hidden");
                 }
                 else {
                     var uname = document.getElementById("userboi");

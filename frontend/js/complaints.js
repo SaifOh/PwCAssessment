@@ -45,8 +45,14 @@ function getComplaint(cid) {
         },
         success: function (res) {
             console.log(res);
-            if (res == "") {//if correct response
-                //add code to change inner html of complaints.html to show them in a table.
+            if (res != "") {//if correct response
+                if ($("#table tbody").length == 0) {
+                    $("#table").append("<tbody></tbody>");
+                }
+                $(".no-records-found").remove();
+                res.forEach(element => {
+                    $("#table tbody").append("<tr>" + "<td>" + element.cid + "<td>" + element.type + "<td>" + element.status + "<td>" + element.context);
+                })
             }
             else {//if error msg
                 //show failed message

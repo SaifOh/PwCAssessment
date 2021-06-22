@@ -34,18 +34,7 @@ let db = new sqlite3.Database('./users.db', (err) => {
             email string,
             type bool
         );`)
-    }
-    console.log('Connected to Users database.');
-});
-
-//What does the complaints db have?
-//cid(generated), uid(refers to userid),type(bool)(refers to complaint type 0/1 service/employee) context(string)(what the complaint is),status(string),
-let db2 = new sqlite3.Database('./complaints.db', (err) => {
-    if (err) {
-        console.log("Error Connecting to Complaints database");
-        console.error(err.message);
-    } else {
-        db2.exec(`create table if not exists "Complaints"(
+        db.exec(`create table if not exists "Complaints"(
             cid integer PRIMARY KEY AUTOINCREMENT,
             uid string,
             type bool,
@@ -53,8 +42,11 @@ let db2 = new sqlite3.Database('./complaints.db', (err) => {
             status string
         );`)
     }
-    console.log('Connected to Complaints database.');
+    console.log('Connected to Users database.');
 });
+
+//What does the complaints db have?
+//cid(generated), uid(refers to userid),type(bool)(refers to complaint type 0/1 service/employee) context(string)(what the complaint is),status(string),
 
 
 //Initialize the server to listen to requests and such
@@ -105,7 +97,7 @@ app.get('/api/users/:uid', async (req, res) => {
 //body : {username, password, email}
 
 app.post('/api/users', function (req, res) {
-    console.log(req.body);
+    //console.log(req.body);
     if (req.body.type == "register") {
         if (req.body.special == "admin1" && req.body.username != "" && req.body.password != "" && req.body.email != "") {
             db.all(`select * from Users where username = ?`, [req.body.username], (error, row) => {
@@ -134,7 +126,7 @@ app.post('/api/users', function (req, res) {
                 // console.log(row);
                 if (error) {
                     console.error(error);
-                    console.log("we here 2");
+                    //console.log("we here 2");
                 }
                 else {
                     if (row.length == 0) {
@@ -197,7 +189,7 @@ app.get('/api/complaint/:cid', async (req, res) => {
     console.log(req.body);
     //match cid with the one we're getting complaints for
     if (checkTokenValid(req.body.token)) {
-        db2.all(`select * from Complaints where cid = ?`, [req.params.cid], (err, data) => {
+        db.all(`select * from Complaints where cid = ?`, [req.params.cid], (err, data) => {
             if (err) {
                 console.error(err);
                 res.status(401).json(err);
@@ -226,8 +218,8 @@ app.get('/api/complaint/:cid', async (req, res) => {
 
 //returns all present complaints
 app.get('/api/complaints', async (req, res) => {
-    console.log(req.query);
-    console.log("we here?")
+    //console.log(req.query);
+    //console.log("we here?")
     //is user admin?
     db.all(`select * from Users where uid = ?`, [req.query.uid], (err, data) => {
         if (err) {
@@ -236,15 +228,15 @@ app.get('/api/complaints', async (req, res) => {
         }
         else {
             if (data.length > 0) {
-                console.log("we here?1")
+                //   console.log("we here?1")
                 if (data[0]['type'] == 1) {
-                    console.log("we here?2")
-                    db2.all('select * from Complaints', (err, row) => {
+                    //       console.log("we here?2")
+                    db.all('select * from Complaints', (err, row) => {
                         if (err) {
                             console.error(err);
                             res.json(err);
                         } else {
-                            console.log("we here?3")
+                            //         console.log("we here?3")
                             res.json(row);
                         }
                     })
@@ -258,13 +250,13 @@ app.get('/api/complaints', async (req, res) => {
 
 //returns user complaints
 app.get('/api/complaints/:i', async (req, res) => {
-    console.log(req.query);
+    //console.log(req.query);
     var token = req.query.token;
     var tk1 = token.split(".");
     var uid = base64.decode(tk1[2]);
     //can user get those complaints?
     db.all(`select * from Users where uid = ?`, [req.query.uid], (err, data) => {
-        console.log("we here?0")
+        //console.log("we here?0")
         if (err) {
 
             console.error(err);
@@ -273,7 +265,7 @@ app.get('/api/complaints/:i', async (req, res) => {
         else {
             if (data.length == 1) {
                 if (data[0]['type'] == 1 || data[0]['uid'] == uid) {
-                    db2.all('select * from Complaints where uid = ?', uid, (err, data) => {
+                    db.all('select * from Complaints where uid = ?', uid, (err, data) => {
                         if (err) {
                             console.error(err);
                             res.json(err);
@@ -301,7 +293,7 @@ app.post('/api/complaints/', async function (req, res) {
         ctype = "Product";
     if (checkTokenValid(req.body.token)) {
         if (req.body.uid && req.body.type == "new") {
-            db2.run(`insert into "Complaints" (uid,type,context,status) values(?,?,?,?)`, [[req.body.uid], ctype, [req.body.context], "Open"], (err, row) => {
+            db.run(`insert into "Complaints" (uid,type,context,status) values(?,?,?,?)`, [[req.body.uid], ctype, [req.body.context], "Open"], (err, row) => {
                 if (err) {
                     console.log(err);
                 }
@@ -313,12 +305,20 @@ app.post('/api/complaints/', async function (req, res) {
         if (req.body.uid && req.body.type == "modify") {
             //is the modifier an admin?
             db.all(`select type from Users where uid = ?`, [req.body.uid], (err, row) => {
-                if (error) {
-                    console.error(error);
+                if (err) {
+                    console.error(err);
                 }
                 else {
                     if (row.length == 1 && row[0]['type'] == 1) {
-                        db2.run(`UPDATE Complaints set STATUS = ? where cid = ?`, [req.body.status], [req.body.cid]);
+                        
+                        db.run(`UPDATE Complaints set STATUS = ? where cid = ?`, [req.body.status], [req.body.cid], (err, row) => {
+                            if (err) {
+                                console.log(err);
+                            }
+                            else {
+                                res.status(201).json("Complaint status updated.");
+                            }
+                        });
                     }
                 }
             })
@@ -328,8 +328,42 @@ app.post('/api/complaints/', async function (req, res) {
         res.status(401).json("Invalid Token");
     }
 });
+app.put('/api/complaints/', async function (req, res) {
+    //console.log(req.body);
+    if (checkTokenValid(req.body.token)) {
+        if (req.body.uid && req.body.type == "modify") {
+            //is the modifier an admin?
+            db.all(`select type from Users where uid = ?`, [req.body.uid], (err, row) => {
+                if (err) {
+                    console.error(err);
+                }
+                else {
+                    //console.log("we here?")
+                    if (row.length == 1 && row[0]['type'] == 1) {
+                     if (updateComp(req.body.status, req.body.cid))
+                        res.status(200).json("updated");
+                    }
+                }
+            })
+        }
+    }
+});
 
-
+function updateComp(status, cid) {
+    let data = [status, cid];
+    let sql = `UPDATE Complaints SET status = ? WHERE cid = ?`;
+    var solved = "Complaint status updated.";
+    db.run(sql, data, (err, row) => {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            //console.log(row)
+            return true;
+        }
+    });
+    return true;
+}
 //
 //idea for login, match stuff, return a generated token to be stored as cookie or something
 //for logout, just invalidate this token/cookie
@@ -339,9 +373,9 @@ app.post('/api/complaints/', async function (req, res) {
 //Instead, I'm gonna generate my own authentication token
 
 function login(username, uid) {
-    console.log("Username: " + username + " , uid: " + uid);
+    //console.log("Username: " + username + " , uid: " + uid);
     let t = Date.now();
-    console.log("Generating Login Token at " + t);
+    //console.log("Generating Login Token at " + t);
     //var tok = CryptoJS.enc.Utf8.parse(plain);
     var encoded = base64.encode(Date.now()) + "." + base64.encode(username) + "." + base64.encode(uid);
     //const token = jwt.sign({ userId: uid }, 'secret', { expiresIn: '24h' });
@@ -386,6 +420,11 @@ app.get('/login', function (req, res) {
 app.get('/register', function (req, res) {
     res.sendFile(path.join(__dirname + '/frontend/register.html'));
 })
+
+app.get('/register/admin', function(req,res){
+    res.sendFile(path.join(__dirname+ '/frontend/r-admin.html'));
+})
+
 app.get('/complaints', function (req, res) {
     res.sendFile(path.join(__dirname + '/frontend/complaints.html'));
 });

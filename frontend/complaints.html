@@ -47,6 +47,9 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, .075);
             border-radius: 25px;
         }
+        .table {
+            table-layout: fixed;
+        }
     </style>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/all.css">
 </head>
@@ -74,19 +77,16 @@
     <div class="container justify-content-center">
         <hr>
         <br>
-        <main class="page contact-us-page">
-            <section class="clean-block clean-form dark">
-
-            </section>
-        </main>
-        <div class="table-responsive-md">
-            <table id="table" class="table container justify-content-center table-dark table-bordered table-hover">
+        <br>
+        <br>
+        <div class="table-responsive">
+            <table id="table" class="table container justify-content-center table-dark table-bordered table-hover overflow-hidden">
                 <thead class="thead-light">
                     <tr>
                         <th data-field="complaintID" id="cid">Complaint #</th>
                         <th data-field="ctype" id="type">Type</th>
                         <th data-field="status" id="status">Status</th>
-                        <th data-field="description" id="context">Description</th>
+                        <th data-field="description" class="text-truncate col-md-4" id="context">Description</th>
                     </tr>
                 </thead>
 

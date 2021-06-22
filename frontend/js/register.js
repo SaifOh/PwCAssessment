@@ -7,7 +7,7 @@ function register(){
     var special = $("#special").val();
 
     var datas = {username: $("#username").val(), password: CryptoJS.MD5(password).toString(), type:"register", email: email, special: special};
-    console.log(JSON.stringify(datas));
+    //console.log(JSON.stringify(datas));
     $.ajax({
         type: "POST",
         dataType:"json",
@@ -20,11 +20,11 @@ function register(){
             $("#failure").removeAttr("hidden")
         },
         success: function (res) {
-            console.log(res.message);
+            //console.log(res.message);
             if(res.message == "User already exists.")
             {
                 $("#failure").removeAttr("hidden")
-                $("#success").Attr("hidden");
+                $("#success").attr("hidden");
             }
             else if(res.message == "Successfully Registered."){
                 $("#success").removeAttr("hidden");

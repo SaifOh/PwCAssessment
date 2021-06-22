@@ -132,7 +132,7 @@ function updateComplaint(status, cid) {
             if (res == "updated") {
                 $("#success").removeAttr("hidden");
                 setTimeout(() => {
-                    window.location.href = "http://localhost:8080/admin";
+                    window.location.href = "http://localhost:8080/ucomplaints";
                 }, 5000)
             }
             //window.location.href = "http://localhost:8080/admin";

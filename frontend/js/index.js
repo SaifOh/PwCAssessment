@@ -1,3 +1,17 @@
+$("#ucomp").click(function(){
+    var cookie = document.cookie.split("; ").find(row => row.startsWith("Access-Token=")).replace("Access-Token=", "");
+    var uid = document.cookie.split("; "[1]).find(row => row.startsWith("userID=")).split('=')[1].replace(";", "");
+
+    $.redirect("/ucomplaints",{token: cookie, uid: uid}, "GET");
+})
+$("#admin").click(function(){
+    var cookie = document.cookie.split("; ").find(row => row.startsWith("Access-Token=")).replace("Access-Token=", "");
+    var uid = document.cookie.split("; "[1]).find(row => row.startsWith("userID=")).split('=')[1].replace(";", "");
+
+    $.redirect("/admin",{token: cookie, uid: uid}, "GET");
+})
+
+
 function complaint() {
     var context = $("#context").val()
     var subject = $("#subject").val()
@@ -48,8 +62,11 @@ function getInfo() {
                     var uname = document.getElementById("userboi");
                     uname.innerHTML = "Hello, " + res[0].username;
                     if(res[0].type == 1)
-                    $("#admin").removeAttr("hidden");
+                    {
+                        $("#admin").removeAttr("hidden");
                     $("#ucomp").removeAttr("hidden");
+                    }
+                    
                 }
                 else {
                     var uname = document.getElementById("userboi");

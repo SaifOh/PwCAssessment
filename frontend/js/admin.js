@@ -1,8 +1,22 @@
 
+$("#ucomp").click(function(){
+    var cookie = document.cookie.split("; ").find(row => row.startsWith("Access-Token=")).replace("Access-Token=", "");
+    var uid = document.cookie.split("; "[1]).find(row => row.startsWith("userID=")).split('=')[1].replace(";", "");
+
+    $.redirect("/ucomplaints",{token: cookie, uid: uid}, "GET");
+})
+$("#admin").click(function(){
+    var cookie = document.cookie.split("; ").find(row => row.startsWith("Access-Token=")).replace("Access-Token=", "");
+    var uid = document.cookie.split("; "[1]).find(row => row.startsWith("userID=")).split('=')[1].replace(";", "");
+
+    $.redirect("/admin",{token: cookie, uid: uid}, "GET");
+})
+
+
 function getComplaints() {
     var uid = document.cookie.split("; "[1]).find(row => row.startsWith("userID=")).split('=')[1].replace(";", "");
     var cookie = document.cookie.split("; ").find(row => row.startsWith("Access-Token=")).replace("Access-Token=", "");
-
+    console.log(uid);
     var datas = { uid: uid, token: cookie }
     $.ajax({
         type: "GET",
@@ -105,6 +119,9 @@ function updateLevel(level, uuid){
                     window.location.href = "http://localhost:8080/admin";
                 }, 5000)
             }
+            else{
+                $("#failed").removeAttr('hidden');
+            }
             //window.location.href = "http://localhost:8080/admin";
 
         }
@@ -143,6 +160,7 @@ function updateComplaint(status, cid) {
 //function to get a specific complaint 
 function getComplaint(cid) {
     var uid = document.cookie.split("; "[1]).find(row => row.startsWith("userID=")).split('=')[1].replace(";", "");
+    
     var cookie = document.cookie.split("; ").find(row => row.startsWith("Access-Token=")).replace("Access-Token=", "");
     var datas = { uid: uid, token: cookie }
     $.ajax({
@@ -194,4 +212,53 @@ function setLevel(value, row, index) {
     if (row.type == "0")
         return "<a class=\"btn btn-success\" href='javascript:updateLevel(1," + row.uid + ")'>Promote</a>";
 
+}
+
+
+function getInfo() {
+    if (document.cookie.split("; ").find(row => row.startsWith("Access-Token="))) {
+        var cookie = document.cookie.split("; ").find(row => row.startsWith("Access-Token=")).replace("Access-Token=", "");
+        var uid = document.cookie.split("; "[1]).find(row => row.startsWith("userID=")).split('=')[1].replace(";", "");
+
+        var datas = { uid: uid, token: cookie };
+        //console.log(datas);
+        $.ajax({
+            type: "GET",
+            url: `${BASE_URL}:${PORT}/api/users/${uid}`,
+            data: datas,
+            contentType: "application/json; charset=utf-8",
+            error: function (er) {
+                console.log("error getting info");
+                console.error(er);
+            },
+            success: function (res) {
+                //console.log(res);
+                if (res.length>0) {
+                    var uname = document.getElementById("userboi");
+                    uname.innerHTML = "Hello, " + res[0].username;
+                    if(res[0].type == 1)
+                    {
+                        $("#admin").removeAttr("hidden");
+                        $("#ucomp").removeAttr("hidden");
+                    }
+                    
+                }
+                else {
+                    var uname = document.getElementById("userboi");
+                    uname.innerHTML = "Please Login";
+                    window.location.href = "/login";
+                }
+
+            }
+        });
+    }
+    else{
+        window.location.href = "/login";
+    }
+}
+
+function logout(){
+    document.cookie = "Access-Token=null";
+    document.cookie = "userID=null"
+    window.location.href = "/login"
 }

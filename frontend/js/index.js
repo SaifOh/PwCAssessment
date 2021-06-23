@@ -14,7 +14,6 @@ $("#admin").click(function(){
 
 function complaint() {
     var context = $("#context").val()
-    var subject = $("#subject").val()
     var email = $("#email").val()
     var type = document.getElementById("rad1").checked;
     var cookie = document.cookie.split("; ").find(row => row.startsWith("Access-Token=")).replace("Access-Token=", "");

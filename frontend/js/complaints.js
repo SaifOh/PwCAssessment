@@ -13,7 +13,7 @@ function getComplaints() {
             console.error(er);
         },
         success: function (res) {
-            console.log(res);
+            //console.log(res);
             if (res != "") {//if correct response
                 if ($("#table tbody").length == 0) {
                     $("#table").append("<tbody></tbody>");

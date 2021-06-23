@@ -36,6 +36,7 @@ let db = new sqlite3.Database('./users.db', (err) => {
         );`)
         db.exec(`create table if not exists "Complaints"(
             cid integer PRIMARY KEY AUTOINCREMENT,
+            email string,
             uid string,
             type bool,
             context string,
@@ -327,7 +328,7 @@ app.post('/api/complaints/', async function (req, res) {
         ctype = "Product";
     if (checkTokenValid(req.body.token)) {
         if (req.body.uid && req.body.type == "new") {
-            db.run(`insert into "Complaints" (uid,type,context,status) values(?,?,?,?)`, [[req.body.uid], ctype, [req.body.context], "Open"], (err, row) => {
+            db.run(`insert into "Complaints" (uid,type,email,context,status) values(?,?,?,?,?)`, [[req.body.uid], ctype,[req.body.email], [req.body.context], "Open"], (err, row) => {
                 if (err) {
                     console.log(err);
                 }

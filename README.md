@@ -1,5 +1,5 @@
-# PwCAssessment
+# Simple Complaint System
 
 ## Getting Started
 
-This project is part of the PwCAssessment.
+This project is a simple complaint system written in Node.js on a restful API.

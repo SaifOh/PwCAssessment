@@ -468,9 +468,7 @@ function isAdmin(uid) {
                 reject(err);
                 return;
             }
-
-            console.log(data);
-            resolve(+data[0]['type'] === 1)
+            if(data.length == 1)resolve(+data[0]['type'] === 1)
         });
     })
 }

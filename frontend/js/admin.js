@@ -116,7 +116,7 @@ function updateLevel(level, uuid){
             if (res.message == "updated user") {
                 $("#success").removeAttr("hidden");
                 setTimeout(() => {
-                    window.location.href = "http://localhost:8080/admin";
+                    $.redirect("/admin",{token: cookie, uid: uid}, "GET");
                 }, 5000)
             }
             else{
@@ -149,7 +149,7 @@ function updateComplaint(status, cid) {
             if (res == "updated") {
                 $("#success").removeAttr("hidden");
                 setTimeout(() => {
-                    window.location.href = "http://localhost:8080/ucomplaints";
+                    $.redirect("/ucomplaints",{token: cookie, uid: uid}, "GET");
                 }, 5000)
             }
             //window.location.href = "http://localhost:8080/admin";

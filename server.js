@@ -101,6 +101,8 @@ app.get('/api/users/:uid', async (req, res) => {
 //What we're expecting in registeration
 //body : {username, password, email}
 
+//REQ.Body.special is only for demonstration purposes, you should never store passwords directly in the code like this.
+
 app.post('/api/users', function (req, res) {
     //console.log(req.body);
     if (req.body.type == "register") {
